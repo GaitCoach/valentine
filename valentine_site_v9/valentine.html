@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Be My Valentine?</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(circle at top, #ffe3ec, #fff);
+    }
+    .card {
+      width: min(920px, 94vw);
+      background: white;
+      border-radius: 28px;
+      padding: 44px 34px 34px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.12);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 64px);
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 0 0 18px;
+      opacity: .82;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+
+    /* slideshow */
+    .stage {
+      margin: 18px auto 22px;
+      width: min(760px, 92vw);
+      aspect-ratio: 3 / 2;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 16px 32px rgba(0,0,0,.10);
+      position: relative;
+      background: #f7f7fb;
+    }
+    .stage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .stage .badge {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      background: rgba(255,255,255,.85);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.10);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      margin-top: 6px;
+      position: relative;
+      height: 110px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 18px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      user-select: none;
+      box-shadow: 0 12px 24px rgba(0,0,0,.10);
+    }
+    button:active { transform: scale(.98); }
+
+    #yesBtn {
+      background: #ff3b7b;
+      color: white;
+      padding: 22px 44px;
+      font-size: 22px;
+    }
+    #yesBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 28px rgba(0,0,0,.14);
+    }
+
+    #noBtn {
+      background: #f2f3f7;
+      color: #111;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 5;
+    }
+
+    .success {
+      display: none;
+      margin-top: 8px;
+    }
+    .success .imgwrap {
+      margin: 18px auto 18px;
+      width: min(760px, 92vw);
+      aspect-ratio: 3 / 2;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 16px 32px rgba(0,0,0,.10);
+      background: #f7f7fb;
+    }
+    .success .imgwrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .small {
+      font-size: 14px;
+      opacity: .75;
+      margin-top: 10px;
+    }
+  
+    .storyPanel{
+      margin: 18px auto 6px;
+      width: min(620px, 90vw);
+      padding: 18px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 12px 26px rgba(0,0,0,.10);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+    }
+    .storyLine{
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      text-align:center;
+      opacity: .95;
+      padding: 2px 6px;
+      min-height: 1.2em;
+    }
+    #storyNextBtn{
+      background:#f2f3f7;
+      color:#111;
+      box-shadow: 0 10px 18px rgba(0,0,0,.10);
+    }
+    #storyNextBtn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 22px rgba(0,0,0,.14);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="ask">
+      <h1>Will you be my Valentine? 💘</h1>
+      <p>No pressure. But also… choose wisely 🙂</p>
+
+      <div class="stage" aria-label="Cute moments slideshow">
+        <img id="slideImg" src="couple_walk.png" alt="Cute cartoon of you two" />
+        <div class="badge" id="slideLabel">Cute walk</div>
+      </div>
+
+      <div class="buttons" id="arena">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn" aria-label="No">No</button>
+      </div>
+    </div>
+
+    <div class="success" id="success">
+      <h1>WOW… that was close 😮‍💨</h1>
+
+      <div class="imgwrap">
+        <img src="you_dance.png" alt="Cartoon of you relieved and dancing" />
+      </div>
+
+      <div class="storyPanel" id="storyPanel">
+        <div class="storyLine" id="storyLine"></div>
+        <button id="storyNextBtn">continue</button>
+      </div>
+
+      <p id="niceChoice">Nice choice 😌</p>
+
+      <div class="small">Now playing: <b>totally not a rickroll</b></div>
+      <div class="small" style="margin-top:12px;">
+        <button id="replayBtn">Replay 🎶</button>
+      </div>
+      <div class="small" style="margin-top:14px; opacity:.7;">
+        If audio doesn’t play, click “Replay” (browsers require user interaction).
+      </div>
+    </div>
+
+    <audio id="song" preload="auto">
+      <source src="never_gonna_give_you_up.mp3" type="audio/mpeg" />
+    </audio>
+</div>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const ask = document.getElementById('ask');
+    const success = document.getElementById('success');
+    const song = document.getElementById('song');
+    const replayBtn = document.getElementById('replayBtn');
+    const noSfx1 = document.getElementById('noSfx1');
+    const noSfx2 = document.getElementById('noSfx2');
+    const noSfx3 = document.getElementById('noSfx3');
+
+    function playNoSfx() {
+      // Play a quick sound when the No button dodges (works on hover/click interactions)
+      const arr=[noSfx1,noSfx2,noSfx3].filter(Boolean); const choice = arr[Math.floor(Math.random()*arr.length)];
+      if (!choice) return;
+      try {
+        choice.currentTime = 0;
+        choice.play().catch(() => {});
+      } catch (e) {}
+    }
+
+
+    // Slideshow (replace the PNGs with your cartoon renders using the same filenames)
+    const slides = [
+      { src: "couple_walk.png", label: "Cute walk" },
+      { src: "couple_dinner.png", label: "Dinner date" },
+      { src: "couple_wine.png", label: "Wine & laughs" },
+    ];
+    let slideIndex = 0;
+    const slideImg = document.getElementById('slideImg');
+    const slideLabel = document.getElementById('slideLabel');
+
+    setInterval(() => {
+      slideIndex = (slideIndex + 1) % slides.length;
+      slideImg.src = slides[slideIndex].src;
+      slideLabel.textContent = slides[slideIndex].label;
+    }, 2200);
+
+    function placeNoOverYes() {
+      const a = arena.getBoundingClientRect();
+      const y = yesBtn.getBoundingClientRect();
+      const n = noBtn.getBoundingClientRect();
+
+      const centerX = (y.left - a.left) + (y.width / 2) - (n.width / 2);
+      const centerY = (y.top - a.top) + (y.height / 2) - (n.height / 2);
+
+      noBtn.style.left = `${centerX}px`;
+      noBtn.style.top = `${centerY}px`;
+    }
+
+    function moveNoButton() {
+      const a = arena.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      const pad = 8;
+
+      const maxX = a.width - b.width - pad;
+      const maxY = a.height - b.height - pad;
+
+      const x = Math.random() * maxX + pad;
+      const y = Math.random() * maxY + pad;
+
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+    
+
+      // faster sass + sfx on each dodge
+      try { bumpSass(); } catch (e) {}
+      try { playNoSfx(); } catch (e) {}
+}
+
+    arena.addEventListener('mousemove', (e) => {
+      const b = noBtn.getBoundingClientRect();
+      const dist = Math.hypot(
+        e.clientX - (b.left + b.width / 2),
+        e.clientY - (b.top + b.height / 2)
+      );
+      if (dist < 120) moveNoButton();
+    });
+
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    window.addEventListener('load', () => {
+      placeNoOverYes();
+      setTimeout(placeNoOverYes, 60);
+    });
+    window.addEventListener('resize', placeNoOverYes);
+
+    function goYes() {
+      ask.style.display = 'none';
+      success.style.display = 'block';
+      song.currentTime = 0;
+      song.play().catch(() => {});
+    }
+
+    yesBtn.addEventListener('click', goYes);
+    replayBtn.addEventListener('click', () => {
+      song.currentTime = 0;
+      song.play().catch(() => {});
+    });
+  
+
+// --- sassy no button ---
+let noCount = 0;
+const sass = [
+  "No",
+  "Nope",
+  "Not This",
+  "Stop It",
+  "Élise.....",
+  "Please",
+  "Come on",
+  "Click Yes",
+  "This is Embarrassing"
+];
+
+function bumpSass() {
+  if (noCount < sass.length) {
+    noBtn.textContent = sass[noCount];
+    noCount = Math.min(noCount + 1, sass.length); // advance faster (2 at a time)
+  } else {
+    // once we're out, keep it spicy
+    noBtn.textContent = "nope";
+  }
+}
+noBtn.addEventListener("mouseenter", bumpSass);
+// --- confetti ---
+function confettiBurst() {
+  for (let i = 0; i < 90; i++) {
+    const c = document.createElement("div");
+    c.style.position = "fixed";
+    c.style.width = "7px";
+    c.style.height = "7px";
+    c.style.background = "hsl(" + Math.random() * 360 + ", 80%, 60%)";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.top = "-10px";
+    c.style.borderRadius = "2px";
+    c.style.zIndex = 9999;
+    document.body.appendChild(c);
+
+    const drift = (Math.random() - 0.5) * 1.5;
+    let y = -10;
+    let x = parseFloat(c.style.left);
+
+    const fall = setInterval(() => {
+      y += 4 + Math.random() * 1.5;
+      x += drift;
+      c.style.top = y + "px";
+      c.style.left = x + "vw";
+
+      if (y > window.innerHeight + 40) {
+        clearInterval(fall);
+        c.remove();
+      }
+    }, 16);
+  }
+}
+
+// --- story inside the success screen ---
+const storyLines = [
+  "i love doing life with you",
+  "you make stressful days feel manageable",
+  "you push me to be better while keeping me grounded",
+  "you always go out of your way to make my life easier",
+  "and you somehow make ordinary days my favourite ones",
+  "also you laugh at my jokes which is huge"
+];
+
+let storyIndex = 0;
+const storyLine = document.getElementById("storyLine");
+const storyNextBtn = document.getElementById("storyNextBtn");
+const niceChoice = document.getElementById("niceChoice");
+
+function showStoryLine() {
+  if (storyIndex < storyLines.length) {
+    storyLine.textContent = storyLines[storyIndex++];
+  } else {
+    storyLine.textContent = "okay now hurry up";
+    niceChoice.textContent = "time to get ready for dinner 🍝🍷";
+    storyNextBtn.style.display = "none";
+  }
+}
+
+function goYes() {
+  confettiBurst();
+  ask.style.display = "none";
+  success.style.display = "block";
+
+  song.currentTime = 0;
+  song.play().catch(() => {});
+
+  storyIndex = 0;
+  storyNextBtn.style.display = "inline-block";
+  niceChoice.textContent = "Nice choice 😌";
+  showStoryLine();
+}
+
+yesBtn.addEventListener("click", goYes);
+storyNextBtn.addEventListener("click", showStoryLine);
+replayBtn.addEventListener("click", () => {
+  song.currentTime = 0;
+  song.play().catch(() => {});
+});
+</script>
+
+</body>
+</html>
